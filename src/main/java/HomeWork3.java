@@ -2,6 +2,18 @@ import java.util.Random;
 import java.util.Scanner;
 
 public class HomeWork3 {
+    public static  Scanner in = new Scanner(System.in);
+
+    public static int getIntFromConsole(String question, int min, int max){
+
+        int rez;
+        do {
+            System.out.println(question);
+            rez=in.nextInt();
+        } while (rez<min||rez>max);
+        return rez;
+    }
+
     public static void randomNumber(){
         Random random = new Random();
         Scanner in = new Scanner(System.in);
@@ -10,12 +22,12 @@ public class HomeWork3 {
             int step = 0;
             int question=random.nextInt(10);
             boolean ugadal = false;
-            System.out.println("Угадайте число от 0 до 9");
+            System.out.println("Я загадал число от 0 до 9");
             do {
                 System.out.println(question);
                 step++;
 
-                int answer = in.nextInt();
+                int answer = getIntFromConsole("Угадайте число от 0 до 9",0,9);
                 if (answer>question){
                     System.out.println("Загаднное число меньше");
                 } else if(answer<question){
@@ -35,15 +47,9 @@ public class HomeWork3 {
         } while(repeat==1);
     }
 
-    public static int min(int a,int b){
-        if (a>b) return b;
-        return a;
-    }
-
     public static void randomFruit(){
         String[] words = {"apple", "orange", "lemon", "banana", "apricot", "avocado", "broccoli", "carrot", "cherry", "garlic", "grape", "melon", "leak", "kiwi", "mango", "mushroom", "nut", "olive", "pea", "peanut", "pear", "pepper", "pineapple", "pumpkin", "potato"};
         Random random = new Random();
-        Scanner in = new Scanner(System.in);
         int questWord = random.nextInt(words.length);
         boolean ugadal=false;
         char[] answerMask={'#','#','#','#','#','#','#','#','#','#','#','#','#','#','#'};
@@ -54,7 +60,7 @@ public class HomeWork3 {
             if (answer.equalsIgnoreCase(words[questWord])){
                 ugadal=true;
             } else {
-                int size = min(answer.length(),words[questWord].length());
+                int size = Math.min(answer.length(),words[questWord].length());
                 for (int i=0;i<size;i++){
                     if (answer.charAt(i)==words[questWord].charAt(i)){
                         answerMask[i]=answer.charAt(i);
@@ -68,7 +74,6 @@ public class HomeWork3 {
     }
 
     public static void main(String[] args) {
-        Scanner in = new Scanner(System.in);
         int answer;
         boolean exit=false;
         do{
@@ -78,15 +83,9 @@ public class HomeWork3 {
             System.out.println("3. Выход");
             answer = in.nextInt();
             switch (answer){
-                case 1:
-                    randomNumber();
-                    break;
-                case 2:
-                    randomFruit();
-                    break;
-                default:
-                    exit=true;
-                    break;
+                case 1-> randomNumber();
+                case 2-> randomFruit();
+                default->exit=true;
             }
 
         }while (!exit);
