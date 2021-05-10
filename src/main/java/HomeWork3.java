@@ -24,7 +24,7 @@ public class HomeWork3 {
             boolean ugadal = false;
             System.out.println("Я загадал число от 0 до 9");
             do {
-                System.out.println(question);
+                //System.out.println(question);
                 step++;
 
                 int answer = getIntFromConsole("Угадайте число от 0 до 9",0,9);
