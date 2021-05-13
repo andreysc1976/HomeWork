@@ -1,5 +1,4 @@
 import java.util.HashMap;
-import java.util.Random;
 import java.util.Scanner;
 
 import static java.lang.Integer.min;
@@ -9,9 +8,9 @@ public class HomeWork4 {
     public static final char COMPUTER_FIELD = 'O';
     public static final char EMPTY_FIELD = '-';
 
-    public static int hSize = 5;
-    public static int vSize = 6;
-    public static int winSize = 4; //Длина линии для победы
+    public static int hSize = 3;
+    public static int vSize = 3;
+    public static int winSize = 3; //Длина линии для победы
 
     public static int inputValue(String str,int maxValue){
         Scanner scanner = new Scanner(System.in);
@@ -52,7 +51,7 @@ public class HomeWork4 {
         //вправо от левого верхнего угла, и вправо от нижнего левого угла
         for (int i = 0; i <countDiagonal/2 ; i++) {
             int diagLength=(min(vSize,hSize)-i);
-            if (diagLength>winSize) {
+            if (diagLength>=winSize) {
                 int[][] diag = new int[2][diagLength];
                 int [][] ldiag = new int[2][diagLength];//обратные диагонали от нижнего ряда
                 for (int j = 0; j < diagLength; j++) {
@@ -168,15 +167,6 @@ public class HomeWork4 {
         field[h][v]=PLAYER_FIELD;
     }
 
-    public static void doCompMove(char[][] field,HashMap<Integer,int[][]> allLinesList){
-        int h,v;
-        do{
-            Random random=new Random();
-            h = random.nextInt(hSize);
-            v = random.nextInt(vSize);
-        }while (isNotEmpty(field,h,v));
-        field[h][v]=COMPUTER_FIELD;
-    }
 
     public static int weigthLine(char[][] field, int[][] addr){
         int sum=0;
@@ -249,7 +239,6 @@ public class HomeWork4 {
     }
 
     public static void doAiMove(char[][] field,HashMap<Integer,int[][]> allLineList){
-        int h,v;
         int[][] weigthLines = new int[2][allLineList.size()];
         int i=0;
         for (Integer key:allLineList.keySet()) {
