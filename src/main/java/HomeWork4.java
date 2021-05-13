@@ -23,8 +23,7 @@ public class HomeWork4 {
         return i;
     }
 
-    public static char[][] initField()
-    {
+    public static char[][] initField()    {
         char [][] field = new char[hSize][vSize];
         for (int i=0;i<hSize;i++){
             for (int j=0;j<vSize;j++){
@@ -34,8 +33,7 @@ public class HomeWork4 {
         return field;
     }
 
-    public static boolean isDraw(char[][] field)
-    {
+    public static boolean isDraw(char[][] field)    {
         for (int i = 0; i <hSize ; i++) {
             for (int j = 0; j <vSize ; j++) {
                 if (isEmpty(field,i,j)) return false;
@@ -180,6 +178,100 @@ public class HomeWork4 {
         field[h][v]=COMPUTER_FIELD;
     }
 
+    public static int weigthLine(char[][] field, int[][] addr){
+        int sum=0;
+        int maxSum=0;
+        for (int i = 0; i <addr[0].length ; i++) {
+            int addrh = addr[0][i];
+            int addrv = addr[1][i];
+                                    //AI играет против игрока
+            if (field[addrh][addrv]==PLAYER_FIELD){
+                sum++;
+                if (sum>maxSum){
+                    maxSum=sum;
+                }
+            } else {
+                sum=0;
+            }
+        }
+        return maxSum;
+    }
+
+    public static void sortWeigthArray(int[][] weigthArray){
+        boolean moved=true;
+        int tempIndex,tempWeigth;
+        while(moved){
+            moved=false;
+            for (int i = 0; i <weigthArray[0].length-1 ; i++) {
+                if (weigthArray[1][i]<weigthArray[1][i+1]){
+                    tempIndex=weigthArray[0][i];
+                    tempWeigth=weigthArray[1][i];
+                    weigthArray[0][i]=weigthArray[0][i+1];
+                    weigthArray[1][i]=weigthArray[1][i+1];
+                    weigthArray[0][i+1]=tempIndex;
+                    weigthArray[1][i+1]=tempWeigth;
+                    moved=true;
+                }
+            }
+        }
+    }
+
+    public static boolean moveToLine(char[][] field,int[][] addr){
+        boolean prevEmpty=false;
+        boolean prevPlayer=false;
+        for (int i = 0; i <addr[0].length ; i++) {
+            int addrh = addr[0][i];
+            int addrv = addr[1][i];
+            if ((field[addrh][addrv]==PLAYER_FIELD)&&(prevEmpty))
+            {
+                int prevaddrh = addr[0][i-1];
+                int prevaddrv = addr[1][i-1];
+                field[prevaddrh][prevaddrv]=COMPUTER_FIELD;
+                return true;
+            }
+            if (field[addrh][addrv]==EMPTY_FIELD&&prevPlayer){
+                int prevaddrh = addr[0][i];
+                int prevaddrv = addr[1][i];
+                field[prevaddrh][prevaddrv]=COMPUTER_FIELD;
+                return true;
+            }
+            if (field[addrh][addrv]==PLAYER_FIELD)
+            {
+                prevPlayer=true;
+            } else if (field[addrh][addrv]==EMPTY_FIELD){
+                prevEmpty=true;
+            } else if (field[addrh][addrv]==COMPUTER_FIELD){
+                prevPlayer=false;prevEmpty=false;
+            }
+
+        }
+        return false;
+    }
+
+    public static void doAiMove(char[][] field,HashMap<Integer,int[][]> allLineList){
+        int h,v;
+        int[][] weigthLines = new int[2][allLineList.size()];
+        int i=0;
+        for (Integer key:allLineList.keySet()) {
+            int[][] addr = allLineList.get(key);
+            weigthLines[0][i]=key;
+            weigthLines[1][i]=weigthLine(field,addr);
+            i++;
+        }
+        sortWeigthArray(weigthLines);
+       //ходить будем в строку где победа игрока ближе
+        int[][] addr;
+        boolean complete=false;
+        for (int j = 0; j <weigthLines[0].length ; j++) {
+            addr = allLineList.get(weigthLines[0][j]);
+            complete = moveToLine(field,addr);
+            if (complete) break;
+        }
+        if (!complete) System.out.println("Error");
+
+
+    }
+
     public static void main(String[] args) {
         start();
     }
@@ -197,7 +289,8 @@ public class HomeWork4 {
                 System.out.println("Is Draw");
                 break;
             }
-            doCompMove(field,allLinesList);
+            doAiMove(field,allLinesList);
+            //doCompMove(field,allLinesList);
             if (isWin(field,COMPUTER_FIELD,allLinesList)){
                 System.out.println("Comp WIN!!!");
                 break;
