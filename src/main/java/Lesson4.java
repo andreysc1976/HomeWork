@@ -84,23 +84,49 @@ public class Lesson4 {
     public static boolean checkLeftToRightDiagonal(char[][] field, char w){
         /*
           2 2 2 2
-        1 0 0 0 0
-        1 0 0 0 0
-        1 0 0 0 0
-        1 0 0 0 0
-         */
-        char[][] diag = new char[vSize][hSize];
-        for (int i = 0; i < field.length ; i++) { /* 1 */
+        1 1 0 0 0
+        1 2 1 0 0
+        1 3 2 1 0
+        1 4 3 2 1
 
+          2 2 2 2
+        1 1 2 3 4
+        1 2 3 4 0
+        1 3 4 0 0
+        1 4 0 0 0
+         */
+        for (int i = 0; i < field.length ; i++) { /* 1 */
+            int size = min(hSize,vSize)-i;//длина диагонали слева сверху -> вправо вниз , берем минимальную разницу, поскольку игровое поле в теории может быть прямоугольным
+            if (size>=winSize){
+                char[] line = new char[size];
+                for (int j = 0; j <size ; j++) {
+                    line[j]=field[i+j][j];
+                }
+                if (isWinLine(line,w)) return true;
+            }
         }
+
+        return false;
+    }
+
+    public static boolean checkRightToLeftDiagonal(char[][] field, char w){
+
         return false;
     }
 
     public static boolean isWin(char[][] field,char w){
         boolean win = checkHorizontal(field,w);
         if (win) return win;
+
         win = checkVertical(field,w);
         if (win) return win;
+
+        win = checkLeftToRightDiagonal(field,w);
+        if (win) return win;
+
+        win = checkRightToLeftDiagonal(field,w);
+        if (win) return win;
+
         return false;
     }
 
