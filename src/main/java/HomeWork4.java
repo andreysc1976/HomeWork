@@ -42,7 +42,7 @@ public class HomeWork4 {
     }
 
 
-    //формирует массив адресов диагоналей и линий матрицы (игрового поля), в первой ячейке номер диагонали, 2 и 3 - адрес элемента диагонали
+    //формирует массив адресов диагоналей и линий матрицы (игрового поля)
     public static HashMap<Integer,int[][]> allLinesList(char[][] field){
         int countDiagonal = (hSize+vSize-3)*2;//-2 угла.
         HashMap<Integer,int[][]> allLinesList =new HashMap<>();
