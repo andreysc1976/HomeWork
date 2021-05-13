@@ -131,6 +131,7 @@ public class Lesson4 {
     }
 
     public static void drawField(char[][] field){
+
         for (int i = 0; i <vSize; i++) {
             System.out.format("__%d_",i+1);
         }

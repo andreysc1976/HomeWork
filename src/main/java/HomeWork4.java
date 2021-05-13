@@ -10,6 +10,7 @@ public class HomeWork4 {
         private int sizeY;
 
         public Field(int sizeY,int sizeX,int winSize){
+
             this.field = new char[sizeY][sizeX];
             this.winSize = winSize;
             this.sizeY = sizeY;
