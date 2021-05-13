@@ -10,8 +10,8 @@ public class HomeWork4 {
     public static final char EMPTY_FIELD = '-';
 
     public static int hSize = 5;
-    public static int vSize = 5;
-    public static int winSize = 3; //Длина линии для победы
+    public static int vSize = 6;
+    public static int winSize = 4; //Длина линии для победы
 
     public static int inputValue(String str,int maxValue){
         Scanner scanner = new Scanner(System.in);
@@ -44,54 +44,17 @@ public class HomeWork4 {
         return true;
     }
 
-    //ищем в одномерном массиве winSize w символов подряд
-    public static boolean isWinLine(char[] line,char w)
-    {
-        int size=0;
-        for (int i = 0; i <line.length ; i++) {
-            if (line[i]==w){
-                size++;
-                if (size==winSize) return true;
-            } else {
-                size=0;
-            }
-        }
-        return false;
-    }
-
-    public static boolean checkHorizontal(char[][] field,char w)
-    {
-        for (char[] line:field)
-        {
-            if (isWinLine(line,w)) return true;
-        }
-        return false;
-    }
-
-    public static boolean checkVertical(char[][] field,char w){
-        char[] line = new char[hSize];
-        //поле у нас прямоугольное, т.е. все линии в нем одинаковой длины :)
-        for (int j = 0; j <field[0].length ; j++)
-        {
-            for (int i = 0; i < field.length ; i++)
-            {
-                line[i]=field[i][j];
-            }
-            if (isWinLine(line,w)) return true;
-        }
-        return false;
-    }
 
     //формирует массив адресов диагоналей и линий матрицы (игрового поля), в первой ячейке номер диагонали, 2 и 3 - адрес элемента диагонали
-    public static HashMap<Integer,int[][]> allLinesMatrix(char[][] field){
+    public static HashMap<Integer,int[][]> allLinesList(char[][] field){
         int countDiagonal = (hSize+vSize-3)*2;//-2 угла.
-        HashMap<Integer,int[][]> allLinesMatrix =new HashMap<>();
+        HashMap<Integer,int[][]> allLinesList =new HashMap<>();
         int index = 0;
 
         //вправо от левого верхнего угла, и вправо от нижнего левого угла
         for (int i = 0; i <countDiagonal/2 ; i++) {
             int diagLength=(min(vSize,hSize)-i);
-            if (diagLength>1) {
+            if (diagLength>winSize) {
                 int[][] diag = new int[2][diagLength];
                 int [][] ldiag = new int[2][diagLength];//обратные диагонали от нижнего ряда
                 for (int j = 0; j < diagLength; j++) {
@@ -102,8 +65,8 @@ public class HomeWork4 {
                     ldiag[1][j]=(i+j);
                 }
                 index++;
-                allLinesMatrix.put(index,diag);
-                allLinesMatrix.put(-index,ldiag);//отрицательный индекс для упрощения отладки, что бы отличать в отладчике разные виды диагоналей
+                allLinesList.put(index,diag);
+                allLinesList.put(-index,ldiag);//отрицательный индекс для упрощения отладки, что бы отличать в отладчике разные виды диагоналей
             }
         }
 
@@ -111,7 +74,7 @@ public class HomeWork4 {
         //0,0 и 0,max пропускаем, поскольку эти диагонали получены в прощлый раз
         for (int i = 1; i <countDiagonal/2 ; i++) {
             int diagLength=(min(vSize,hSize)-i);
-            if (diagLength>1) {
+            if (diagLength>=winSize) {
                 int[][] diag = new int[2][diagLength];
                 int [][] ldiag = new int[2][diagLength];//обратные диагонали от нижнего ряда
                 for (int j = 0; j < diagLength; j++) {
@@ -122,63 +85,51 @@ public class HomeWork4 {
                     ldiag[1][j]=(hSize-1)-j;
                 }
                 index++;
-                allLinesMatrix.put(index,diag);
-                allLinesMatrix.put(-index,ldiag);//отрицательный индекс для упрощения отладки, что бы отличать в отладчике разные виды диагоналей
+                allLinesList.put(index,diag);
+                allLinesList.put(-index,ldiag);//отрицательный индекс для упрощения отладки, что бы отличать в отладчике разные виды диагоналей
             }
         }
 
-        return allLinesMatrix;
+        //теперь задача попроще, соберем все линии в этот же словарь
+        for (int i = 0; i <field.length ; i++) {
+            int[][] line = new int[2][field[i].length];
+            for (int j = 0; j <field[i].length ; j++) {
+                line[0][j]=i;
+                line[1][j]=j;
+            }
+            index++;
+            allLinesList.put(index,line);
+        }
+        for (int j = 0; j <field[0].length ; j++) {
+            int [][] line = new int[2][field.length];
+            for (int i = 0; i < field.length ; i++) {
+                line[0][i]=i;
+                line[1][i]=j;
+            }
+            index++;
+            allLinesList.put(index,line);
+        }
+
+        return allLinesList;
     }
 
-    public static boolean checkLeftToRightDiagonal(char[][] field, char w){
-        /*
-          2 2 2 2 2
-        1 1 0 0 0 0
-        1 2 1 0 0 0
-        1 3 2 1 0 0
-        1 4 3 2 1 0
-        1 5 4 3 2 1
 
-          2 2 2 2
-        1 1 2 3 4
-        1 2 3 4 0
-        1 3 4 0 0
-        1 4 0 0 0
-         */
+    public static boolean isWin(char[][] field,char w,HashMap<Integer,int[][]> allLineList){
 
-
-        for (int i = 0; i < field.length ; i++) { /* 1 */
-            int size = min(hSize,vSize)-i;//длина диагонали слева сверху -> вправо вниз , берем минимальную разницу, поскольку игровое поле в теории может быть прямоугольным
-            if (size>=winSize){
-                char[] line = new char[size];
-                for (int j = 0; j <size ; j++) {
-                    line[j]=field[i+j][j];
+        for (Integer key:allLineList.keySet()) {
+            int[][] addr = allLineList.get(key);
+            int sum=0;
+            for (int i = 0; i < addr[0].length ; i++) {
+                int addrh = addr[0][i];
+                int addrv = addr[1][i];
+                if (field[addrh][addrv]==w){
+                    sum++;
+                } else {
+                    sum=0;
                 }
-                if (isWinLine(line,w)) return true;
+                if(sum>=winSize) return true;
             }
         }
-
-        return false;
-    }
-
-    public static boolean checkRightToLeftDiagonal(char[][] field, char w){
-
-        return false;
-    }
-
-    public static boolean isWin(char[][] field,char w){
-        boolean win = checkHorizontal(field,w);
-        if (win) return win;
-
-        win = checkVertical(field,w);
-        if (win) return win;
-
-        win = checkLeftToRightDiagonal(field,w);
-        if (win) return win;
-
-        win = checkRightToLeftDiagonal(field,w);
-        if (win) return win;
-
         return false;
     }
 
@@ -219,7 +170,7 @@ public class HomeWork4 {
         field[h][v]=PLAYER_FIELD;
     }
 
-    public static void doCompMove(char[][] field){
+    public static void doCompMove(char[][] field,HashMap<Integer,int[][]> allLinesList){
         int h,v;
         do{
             Random random=new Random();
@@ -235,10 +186,10 @@ public class HomeWork4 {
 
     static void start(){
         char[][] field=initField();
-        HashMap<Integer,int[][]> diagonals = allLinesMatrix(field);
+        HashMap<Integer,int[][]> allLinesList = allLinesList(field);
         do {
             doPlayerMove(field);
-            if (isWin(field,PLAYER_FIELD)){
+            if (isWin(field,PLAYER_FIELD,allLinesList)){
                 System.out.println("Player WIN!!!");
                 break;
             }
@@ -246,8 +197,8 @@ public class HomeWork4 {
                 System.out.println("Is Draw");
                 break;
             }
-            doCompMove(field);
-            if (isWin(field,COMPUTER_FIELD)){
+            doCompMove(field,allLinesList);
+            if (isWin(field,COMPUTER_FIELD,allLinesList)){
                 System.out.println("Comp WIN!!!");
                 break;
             }
